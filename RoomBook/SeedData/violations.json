@@ -1,0 +1,54 @@
+[
+  {
+    "userId": "3563af6c-6fb9-6e68-e913-b07ff432e658",
+    "bookingId": "a37f4911-f7c6-7f58-6e18-8e7052b389af",
+    "reason": "預約未於簽到時窗內簽到，時段已自動釋出",
+    "points": 1,
+    "occurredAtUtc": "2026-11-19T03:15:00Z",
+    "isRevoked": false,
+    "revokedById": null,
+    "id": "795f8b44-cf6c-7334-6b42-e1ec1afb3986",
+    "version": 1,
+    "createdAt": "2026-11-19T03:15:00Z",
+    "updatedAt": "2026-11-19T03:15:00Z"
+  },
+  {
+    "userId": "3563af6c-6fb9-6e68-e913-b07ff432e658",
+    "bookingId": null,
+    "reason": "使用會議室逾時未離開，影響下一場會議",
+    "points": 1,
+    "occurredAtUtc": "2026-11-19T03:55:56.833198Z",
+    "isRevoked": false,
+    "revokedById": null,
+    "id": "1fa90ca4-cef8-e874-65e7-6230d58d1921",
+    "version": 1,
+    "createdAt": "2026-11-19T03:55:56.833198Z",
+    "updatedAt": "2026-11-19T03:55:56.833198Z"
+  },
+  {
+    "userId": "3563af6c-6fb9-6e68-e913-b07ff432e658",
+    "bookingId": "a24bd0d2-ceb8-7a10-1b26-b09a6094f488",
+    "reason": "預約未於簽到時窗內簽到，時段已自動釋出",
+    "points": 1,
+    "occurredAtUtc": "2026-11-23T05:15:00Z",
+    "isRevoked": false,
+    "revokedById": null,
+    "id": "55eb11a4-901c-f35c-791e-12ba9f329e5a",
+    "version": 1,
+    "createdAt": "2026-11-23T05:15:00Z",
+    "updatedAt": "2026-11-23T05:15:00Z"
+  },
+  {
+    "userId": "053bb18c-29a6-95a8-3066-6d9bedddf069",
+    "bookingId": null,
+    "reason": "會議結束後未清理會議室（管理員已撤銷）",
+    "points": 1,
+    "occurredAtUtc": "2026-11-15T03:55:56.833198Z",
+    "isRevoked": true,
+    "revokedById": "b85ed470-e1af-228e-a65b-2496f2b4c931",
+    "id": "1962b781-dd78-76ee-1776-13856d039dde",
+    "version": 1,
+    "createdAt": "2026-11-15T03:55:56.833198Z",
+    "updatedAt": "2026-11-15T03:55:56.833198Z"
+  }
+]

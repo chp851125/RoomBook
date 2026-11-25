@@ -1,0 +1,95 @@
+@page
+@model RoomBook.Pages.Rooms.AvailableModel
+@inject ITimeProvider Time
+@{
+    ViewData["Title"] = "現在有空的會議室";
+    ViewData["Nav"] = "rooms";
+}
+
+<div class="d-flex align-items-center mb-3 gap-2">
+    <h1 class="h4 mb-0 me-auto"><i class="bi bi-lightning-charge text-success me-1"></i>現在有空</h1>
+    <span class="text-muted small">@Time.Format(Time.UtcNow, "HH:mm") 更新</span>
+    <a class="btn btn-outline-secondary btn-sm" asp-page="/Rooms/Available"><i class="bi bi-arrow-clockwise"></i></a>
+</div>
+
+@if (!Model.OpenNow)
+{
+    <div class="alert alert-warning"><i class="bi bi-moon me-1"></i>目前不在營業時段（或今天是假日），沒有可立即使用的會議室。你仍可預約之後的時段。</div>
+}
+
+@if (Model.Free.Count > 0)
+{
+    <div class="row g-3 mb-4">
+        @foreach (var item in Model.Free)
+        {
+            var r = item.Info.Room;
+            <div class="col-12 col-md-6 col-xl-4">
+                <div class="card border-0 shadow-sm h-100 border-start border-4 border-success">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <h2 class="h6 mb-1">@r.Name</h2>
+                            <span class="badge text-bg-success">空閒</span>
+                        </div>
+                        <div class="text-muted small mb-1">@r.Floor 樓 · @r.Capacity 人@(r.RequiresApproval ? " · 需審核" : "")</div>
+                        <div class="small mb-2">空閒至 <strong>@Time.Format(item.Info.FreeUntilUtc!.Value, "HH:mm")</strong></div>
+                        <div class="mb-3">
+                            @foreach (var e in r.Equipment) { <span class="badge rounded-pill text-bg-light border me-1">@e</span> }
+                        </div>
+                        @if (item.BookUrl is not null)
+                        {
+                            <a class="btn btn-success w-100 btn-lg-mobile" href="@item.BookUrl">
+                                <i class="bi bi-lightning-charge-fill me-1"></i>一鍵預約至 @item.SuggestEndLocal!.Value.ToString("HH:mm")
+                            </a>
+                        }
+                        else
+                        {
+                            <div class="text-muted small">剩餘時間不足 15 分鐘，請預約之後的時段。</div>
+                            <a class="btn btn-outline-primary w-100 mt-2" asp-page="/Bookings/Create" asp-route-roomId="@r.Id">預約其他時段</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else if (Model.OpenNow)
+{
+    <div class="alert alert-secondary">目前所有會議室都在使用中，可參考下方預計空出的時間。</div>
+}
+
+@if (Model.Busy.Count > 0)
+{
+    <h2 class="h6 text-muted">使用中</h2>
+    <div class="row g-2 mb-4">
+        @foreach (var item in Model.Busy)
+        {
+            var i = item.Info;
+            <div class="col-12 col-md-6 col-xl-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body py-2">
+                        <div class="d-flex justify-content-between"><strong>@i.Room.Name</strong><span class="badge text-bg-danger">使用中</span></div>
+                        <div class="small text-muted">@i.CurrentOrganizer · 預計 @Time.Format(i.Current!.EndUtc, "HH:mm") 結束</div>
+                        <a class="btn btn-sm btn-outline-primary mt-2" asp-page="/Bookings/Create" asp-route-roomId="@i.Room.Id"
+                           asp-route-start="@Time.Format(i.Current.EndUtc, "yyyy-MM-ddTHH:mm")"
+                           asp-route-end="@Time.Format(i.Current.EndUtc.AddHours(1), "yyyy-MM-ddTHH:mm")">預約接續的時段</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if (Model.Unavailable.Count > 0)
+{
+    <h2 class="h6 text-muted">暫時無法使用</h2>
+    <ul class="list-group shadow-sm">
+        @foreach (var i in Model.Unavailable)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                @i.Room.Name
+                @if (i.Room.Status != RoomStatus.Active) { <partial name="_RoomStatusBadge" model="i.Room.Status" /> }
+                else { <span class="badge text-bg-secondary">非營業時段</span> }
+            </li>
+        }
+    </ul>
+}

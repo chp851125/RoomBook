@@ -1,0 +1,18 @@
+<div class="modal fade" id="resetDataModal" tabindex="-1" aria-labelledby="resetDataModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content" method="post" asp-page="/Admin/Index" asp-page-handler="Reset">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resetDataModalLabel"><i class="bi bi-exclamation-triangle text-danger me-2"></i>重置為範例資料</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-1">這會<strong>清空所有目前資料</strong>（預約、通知、稽核紀錄、設定…），並從範例資料重新建立。</p>
+                <p class="text-muted small mb-0">完成後會自動登出並回到登入頁，此動作無法復原。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="submit" class="btn btn-danger">確認重置</button>
+            </div>
+        </form>
+    </div>
+</div>

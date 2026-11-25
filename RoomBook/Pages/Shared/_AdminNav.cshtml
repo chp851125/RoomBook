@@ -1,0 +1,21 @@
+@model string
+@{
+    var items = new (string Key, string Page, string Label, string Icon)[]
+    {
+        ("home", "/Admin/Index", "總覽", "bi-speedometer2"),
+        ("approvals", "/Admin/Approvals/Index", "審核", "bi-check2-square"),
+        ("bookings", "/Admin/Bookings/Index", "所有預約", "bi-journal-text"),
+        ("rooms", "/Admin/Rooms/Index", "會議室", "bi-building"),
+        ("users", "/Admin/Users/Index", "使用者", "bi-people"),
+        ("hours", "/Admin/Hours/Index", "營業時段", "bi-clock"),
+        ("settings", "/Admin/Settings/Index", "規則設定", "bi-sliders"),
+        ("stats", "/Admin/Stats/Index", "統計報表", "bi-bar-chart"),
+        ("audit", "/Admin/Audit/Index", "稽核紀錄", "bi-shield-check")
+    };
+}
+<ul class="nav nav-pills flex-nowrap overflow-auto pb-1 mb-3 tab-scroll admin-nav">
+    @foreach (var i in items)
+    {
+        <li class="nav-item"><a class="nav-link text-nowrap @(Model == i.Key ? "active" : "")" asp-page="@i.Page"><i class="bi @i.Icon me-1"></i>@i.Label</a></li>
+    }
+</ul>

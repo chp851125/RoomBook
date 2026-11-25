@@ -1,0 +1,55 @@
+﻿@page
+@model RoomBook.Pages.IndexModel
+@inject ITimeProvider Time
+@{
+    ViewData["Title"] = "首頁";
+}
+
+<div class="mb-3">
+    <h1 class="h4 mb-1">你好，@Model.Me?.DisplayName</h1>
+    <div class="text-muted small">@Time.ToLocal(Time.UtcNow).ToString("yyyy/MM/dd dddd")</div>
+</div>
+
+@if (Model.IsSuspended)
+{
+    <div class="alert alert-danger">
+        <i class="bi bi-slash-circle me-1"></i>你的預約權限已被暫停至
+        @Time.ToLocal(Model.Me!.SuspendedUntilUtc!.Value).ToString("yyyy/MM/dd HH:mm")（違規累計 @Model.Me.ViolationPoints 點）。
+    </div>
+}
+
+<div class="row g-2 mb-4">
+    <div class="col-6 col-md-3"><a class="quick-tile" asp-page="/Bookings/Create"><i class="bi bi-plus-circle"></i>新增預約</a></div>
+    <div class="col-6 col-md-3"><a class="quick-tile" asp-page="/Bookings/Index"><i class="bi bi-calendar3"></i>行事曆</a></div>
+    <div class="col-6 col-md-3"><a class="quick-tile" asp-page="/MyBookings/Index"><i class="bi bi-journal-check"></i>我的預約</a></div>
+    <div class="col-6 col-md-3"><a class="quick-tile" asp-page="/Rooms/Available"><i class="bi bi-lightning-charge"></i>現在有空</a></div>
+</div>
+
+<h2 class="h6 text-muted">會議室一覽</h2>
+<div class="row g-3">
+    @foreach (var room in Model.Rooms)
+    {
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h3 class="h6 mb-1">@room.Name</h3>
+                        @switch (room.Status)
+                        {
+                            case RoomStatus.Active: <span class="badge text-bg-success">可預約</span> break;
+                            case RoomStatus.Maintenance: <span class="badge text-bg-warning">維護中</span> break;
+                            default: <span class="badge text-bg-secondary">停用</span> break;
+                        }
+                    </div>
+                    <div class="text-muted small mb-2">@room.Floor 樓 · 可容納 @room.Capacity 人@(room.RequiresApproval ? " · 需審核" : "")</div>
+                    <div>
+                        @foreach (var e in room.Equipment)
+                        {
+                            <span class="badge rounded-pill text-bg-light border me-1">@e</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

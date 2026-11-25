@@ -1,0 +1,83 @@
+@page
+@model RoomBook.Pages.Notifications.IndexModel
+@using RoomBook.Application.Services
+@inject ITimeProvider Time
+@{
+    ViewData["Title"] = "通知";
+    ViewData["Nav"] = "notifications";
+}
+
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <h1 class="h4 mb-0 me-auto">通知中心 @if (Model.Unread > 0) { <span class="badge text-bg-danger align-middle">@Model.Unread</span> }</h1>
+    <div class="btn-group btn-group-sm">
+        <a class="btn @(!Model.UnreadOnly ? "btn-primary" : "btn-outline-primary")" asp-route-unreadOnly="false">全部</a>
+        <a class="btn @(Model.UnreadOnly ? "btn-primary" : "btn-outline-primary")" asp-route-unreadOnly="true">未讀</a>
+    </div>
+    @if (Model.Unread > 0)
+    {
+        <form method="post" asp-page-handler="MarkAll"><button class="btn btn-outline-secondary btn-sm"><i class="bi bi-check2-all me-1"></i>全部標為已讀</button></form>
+    }
+</div>
+
+@if (Model.Result.Items.Count == 0)
+{
+    <div class="text-center text-muted py-5"><i class="bi bi-bell-slash display-5"></i><p class="mt-2">@(Model.UnreadOnly ? "沒有未讀通知。" : "還沒有任何通知。")</p></div>
+}
+else
+{
+    <div class="list-group shadow-sm mb-3">
+        @foreach (var n in Model.Result.Items)
+        {
+            <div class="list-group-item d-flex gap-3 align-items-start @(n.IsRead ? "" : "notif-unread")">
+                <i class="bi @NotificationLabels.Icon(n.Type) fs-4 text-primary mt-1"></i>
+                <div class="flex-grow-1 min-w-0">
+                    <div class="d-flex justify-content-between gap-2">
+                        <span class="fw-semibold">@n.Title @if (!n.IsRead) { <span class="badge-dot-inline" aria-label="未讀"></span> }</span>
+                        <span class="text-muted small text-nowrap">@Time.Format(n.CreatedAt, "MM/dd HH:mm")</span>
+                    </div>
+                    <div class="small">@n.Message</div>
+                    <div class="mt-2 d-flex gap-2">
+                        @if (n.BookingId is not null)
+                        {
+                            <form method="post" asp-page-handler="Open"><input type="hidden" name="id" value="@n.Id" /><input type="hidden" name="bookingId" value="@n.BookingId" />
+                                <button class="btn btn-sm btn-outline-primary">查看預約</button></form>
+                        }
+                        @if (!n.IsRead)
+                        {
+                            <form method="post" asp-page-handler="MarkRead"><input type="hidden" name="id" value="@n.Id" />
+                                <button class="btn btn-sm btn-outline-secondary">標為已讀</button></form>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (Model.Result.TotalPages > 1)
+    {
+        <nav aria-label="分頁"><ul class="pagination justify-content-center">
+            <li class="page-item @(Model.Result.Page <= 1 ? "disabled" : "")"><a class="page-link" asp-route-unreadOnly="@Model.UnreadOnly" asp-route-pageNo="@(Model.Result.Page - 1)">上一頁</a></li>
+            <li class="page-item disabled"><span class="page-link">@Model.Result.Page / @Model.Result.TotalPages</span></li>
+            <li class="page-item @(Model.Result.Page >= Model.Result.TotalPages ? "disabled" : "")"><a class="page-link" asp-route-unreadOnly="@Model.UnreadOnly" asp-route-pageNo="@(Model.Result.Page + 1)">下一頁</a></li>
+        </ul></nav>
+    }
+}
+
+<div class="card border-0 shadow-sm mt-4" id="prefs">
+    <div class="card-header bg-white fw-semibold"><i class="bi bi-envelope me-1"></i>Email 通知偏好</div>
+    <form method="post" asp-page-handler="EmailPrefs" class="card-body">
+        <p class="small text-muted">站內通知一定會送達；勾選的類型另外寄 Email（本系統為模擬，信件會寫成 .eml 放在 outbox 資料夾）。</p>
+        <div class="row g-2">
+            @foreach (var t in Enum.GetValues<NotificationType>())
+            {
+                <div class="col-12 col-md-6">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" name="enabled" id="pref-@t" value="@t" checked="@(!Model.EmailDisabled.Contains(t))" />
+                        <label class="form-check-label" for="pref-@t"><i class="bi @NotificationLabels.Icon(t) me-1"></i>@NotificationLabels.Of(t)</label>
+                    </div>
+                </div>
+            }
+        </div>
+        <button class="btn btn-primary btn-sm mt-3">儲存偏好</button>
+    </form>
+</div>

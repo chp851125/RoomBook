@@ -1,0 +1,89 @@
+@page "{id:guid?}"
+@model RoomBook.Pages.Admin.Users.EditModel
+@inject ITimeProvider Time
+@{
+    ViewData["Title"] = Model.IsNew ? "新增使用者" : "管理使用者";
+    ViewData["Nav"] = "admin";
+}
+
+<h1 class="h4 mb-3"><i class="bi bi-gear me-2"></i>管理後台</h1>
+<partial name="_AdminNav" model='"users"' />
+
+@if (Model.TempPassword is not null)
+{
+    <div class="alert alert-warning">
+        <div class="fw-semibold"><i class="bi bi-key me-1"></i>臨時密碼（只顯示這一次，請立即交給本人）</div>
+        <code class="fs-5 user-select-all">@Model.TempPassword</code>
+    </div>
+}
+
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold">@(Model.IsNew ? "新增使用者" : "基本資料")</div>
+            <form method="post" asp-page-handler="Save" class="card-body">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <input type="hidden" asp-for="Input.Id" /><input type="hidden" asp-for="Input.Version" />
+                <div class="row g-3">
+                    <div class="col-12 col-md-6"><label asp-for="Input.DisplayName" class="form-label">姓名</label><input asp-for="Input.DisplayName" class="form-control" maxlength="30" /></div>
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Input.Account" class="form-label">帳號</label>
+                        <input asp-for="Input.Account" class="form-control" readonly="@(!Model.IsNew)" maxlength="30" autocomplete="off" />
+                    </div>
+                    <div class="col-12"><label asp-for="Input.Email" class="form-label">Email</label><input asp-for="Input.Email" type="email" class="form-control" /></div>
+                    <div class="col-12 col-md-6">
+                        <label asp-for="Input.DepartmentId" class="form-label">部門</label>
+                        <select asp-for="Input.DepartmentId" class="form-select">
+                            @foreach (var d in Model.Departments) { <option value="@d.Id" selected="@(d.Id == Model.Input.DepartmentId)">@d.Name</option> }
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-6"><label asp-for="Input.JobTitle" class="form-label">職稱</label><input asp-for="Input.JobTitle" class="form-control" maxlength="30" /></div>
+                    <div class="col-6">
+                        <label asp-for="Input.Role" class="form-label">角色</label>
+                        <select asp-for="Input.Role" class="form-select"><option value="Employee">員工</option><option value="Admin">管理員</option></select>
+                    </div>
+                    <div class="col-6 d-flex align-items-end"><div class="form-check form-switch"><input asp-for="Input.IsActive" class="form-check-input" role="switch" /><label asp-for="Input.IsActive" class="form-check-label">啟用帳號</label></div></div>
+                </div>
+                <div class="d-flex gap-2 mt-4"><button class="btn btn-primary">@(Model.IsNew ? "建立帳號" : "儲存")</button><a class="btn btn-outline-secondary" asp-page="/Admin/Users/Index">返回</a></div>
+            </form>
+        </div>
+    </div>
+
+    @if (!Model.IsNew && Model.Target is { } t)
+    {
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-white fw-semibold">帳號動作</div>
+                <div class="card-body d-grid gap-2">
+                    <form method="post" asp-page-handler="ResetPassword" asp-route-id="@t.Id" data-confirm="確定要重設 @t.DisplayName 的密碼嗎？">
+                        <button class="btn btn-outline-warning w-100"><i class="bi bi-key me-1"></i>重設密碼</button>
+                    </form>
+                    @if (Model.IsSuspended || t.ViolationPoints > 0)
+                    {
+                        <form method="post" asp-page-handler="Release" asp-route-id="@t.Id">
+                            <button class="btn btn-outline-success w-100"><i class="bi bi-unlock me-1"></i>解除暫停並清除違規點數</button>
+                        </form>
+                    }
+                    @if (Model.IsSuspended) { <div class="small text-danger">暫停至 @Time.Format(t.SuspendedUntilUtc!.Value)</div> }
+                    @if (t.LockoutEndUtc > Time.UtcNow) { <div class="small text-danger">登入鎖定至 @Time.Format(t.LockoutEndUtc!.Value)</div> }
+                </div>
+            </div>
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white fw-semibold">違規紀錄（目前 @t.ViolationPoints 點）</div>
+                @if (Model.Violations.Count == 0) { <div class="card-body text-muted small">沒有違規紀錄。</div> }
+                else
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var v in Model.Violations)
+                        {
+                            <li class="list-group-item small @(v.IsRevoked ? "text-muted text-decoration-line-through" : "")">
+                                <div class="d-flex justify-content-between"><span>+@v.Points 點</span><span>@Time.Format(v.OccurredAtUtc, "MM/dd HH:mm")</span></div>
+                                @v.Reason @if (v.IsRevoked) { <span class="badge text-bg-light border">已撤銷</span> }
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    }
+</div>

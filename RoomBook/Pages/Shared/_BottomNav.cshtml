@@ -1,0 +1,32 @@
+@model string
+@inject INotificationService Notifications
+@{
+    var nav = Model ?? "";
+    var unread = Guid.TryParse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value, out var uid)
+        ? Notifications.GetUnreadCount(uid) : 0;
+}
+<nav class="bottom-nav d-lg-none" aria-label="主要導覽">
+    <a class="bottom-nav-item @(nav == "calendar" ? "active" : "")" asp-page="/Bookings/Index">
+        <i class="bi bi-calendar3"></i><span>行事曆</span>
+    </a>
+    <a class="bottom-nav-item @(nav == "my" ? "active" : "")" asp-page="/MyBookings/Index">
+        <i class="bi bi-journal-check"></i><span>我的預約</span>
+    </a>
+    <a class="bottom-nav-item bottom-nav-add" asp-page="/Bookings/Create" aria-label="新增預約">
+        <span class="add-circle"><i class="bi bi-plus-lg"></i></span>
+        <span>新增預約</span>
+    </a>
+    <a class="bottom-nav-item @(nav == "notifications" ? "active" : "")" asp-page="/Notifications/Index">
+        <span class="position-relative d-inline-block">
+            <i class="bi bi-bell"></i>
+            @if (unread > 0)
+            {
+                <span class="badge-dot" aria-label="@unread 則未讀"></span>
+            }
+        </span>
+        <span>通知</span>
+    </a>
+    <a class="bottom-nav-item @(nav == "me" ? "active" : "")" asp-page="/Account/Me">
+        <i class="bi bi-person-circle"></i><span>我</span>
+    </a>
+</nav>

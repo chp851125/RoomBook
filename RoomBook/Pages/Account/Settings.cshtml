@@ -1,0 +1,46 @@
+@page
+@model RoomBook.Pages.Account.SettingsModel
+@{
+    ViewData["Title"] = "個人設定";
+    ViewData["Nav"] = "me";
+}
+
+<h1 class="h4 mb-3">個人設定</h1>
+
+@if (Model.Me?.MustChangePassword == true || Model.Force)
+{
+    <div class="alert alert-warning"><i class="bi bi-key me-1"></i>你的帳號使用的是臨時密碼，請先變更密碼。</div>
+}
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold"><i class="bi bi-shield-lock me-1"></i>修改密碼</div>
+            <form method="post" asp-page-handler="Password" class="card-body">
+                <div class="mb-3"><label asp-for="Password.Current" class="form-label">目前的密碼</label><input asp-for="Password.Current" class="form-control" autocomplete="current-password" /><span asp-validation-for="Password.Current" class="text-danger small"></span></div>
+                <div class="mb-3"><label asp-for="Password.New" class="form-label">新密碼</label><input asp-for="Password.New" class="form-control" autocomplete="new-password" /><div class="form-text">至少 @Model.MinLength 個字元，需同時包含英文字母與數字。</div><span asp-validation-for="Password.New" class="text-danger small"></span></div>
+                <div class="mb-3"><label asp-for="Password.Confirm" class="form-label">確認新密碼</label><input asp-for="Password.Confirm" class="form-control" autocomplete="new-password" /><span asp-validation-for="Password.Confirm" class="text-danger small"></span></div>
+                <button class="btn btn-primary">變更密碼</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white fw-semibold"><i class="bi bi-star me-1"></i>預設常用會議室</div>
+            <form method="post" asp-page-handler="Favorites" class="card-body">
+                <p class="small text-muted">新增預約時會自動帶入第一個常用會議室。</p>
+                @foreach (var r in Model.Rooms)
+                {
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Favorites" value="@r.Id" id="fav-@r.Id" checked="@Model.Favorites.Contains(r.Id)" />
+                        <label class="form-check-label" for="fav-@r.Id">@r.Name <span class="text-muted small">@r.Floor 樓 · @r.Capacity 人</span></label>
+                    </div>
+                }
+                <button class="btn btn-primary btn-sm mt-3">儲存</button>
+            </form>
+        </div>
+        <a class="btn btn-outline-secondary w-100" asp-page="/Notifications/Index" fragment="prefs"><i class="bi bi-envelope me-1"></i>通知與 Email 偏好</a>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

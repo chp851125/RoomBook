@@ -1,0 +1,72 @@
+[
+  {
+    "day": "Monday",
+    "isOpen": true,
+    "openTime": "08:30:00",
+    "closeTime": "18:30:00",
+    "id": "d7cd05da-7831-3b40-0bbc-91ad2853b8bf",
+    "version": 1,
+    "createdAt": "2026-07-28T03:55:56.833198Z",
+    "updatedAt": "2026-07-28T03:55:56.833198Z"
+  },
+  {
+    "day": "Tuesday",
+    "isOpen": true,
+    "openTime": "08:30:00",
+    "closeTime": "18:30:00",
+    "id": "0f310e22-b2ca-562a-9c45-2c221d425dcb",
+    "version": 1,
+    "createdAt": "2026-07-28T03:55:56.833198Z",
+    "updatedAt": "2026-07-28T03:55:56.833198Z"
+  },
+  {
+    "day": "Wednesday",
+    "isOpen": true,
+    "openTime": "08:30:00",
+    "closeTime": "18:30:00",
+    "id": "f3a37ab9-fe39-6578-0032-707ba501ae45",
+    "version": 1,
+    "createdAt": "2026-07-28T03:55:56.833198Z",
+    "updatedAt": "2026-07-28T03:55:56.833198Z"
+  },
+  {
+    "day": "Thursday",
+    "isOpen": true,
+    "openTime": "08:30:00",
+    "closeTime": "18:30:00",
+    "id": "0b403282-db0d-28ba-da77-3bec4b1d1dc8",
+    "version": 1,
+    "createdAt": "2026-07-28T03:55:56.833198Z",
+    "updatedAt": "2026-07-28T03:55:56.833198Z"
+  },
+  {
+    "day": "Friday",
+    "isOpen": true,
+    "openTime": "08:30:00",
+    "closeTime": "18:30:00",
+    "id": "adf4c55e-c5af-2385-96cb-0e9741afb19a",
+    "version": 1,
+    "createdAt": "2026-07-28T03:55:56.833198Z",
+    "updatedAt": "2026-07-28T03:55:56.833198Z"
+  },
+  {
+    "day": "Saturday",
+    "isOpen": false,
+    "openTime": "08:30:00",
+    "closeTime": "18:30:00",
+    "id": "eaa0e796-5102-ddbd-bf7b-18c2c28c1ae3",
+    "version": 1,
+    "createdAt": "2026-07-28T03:55:56.833198Z",
+    "updatedAt": "2026-07-28T03:55:56.833198Z"
+  },
+  {
+    "day": "Sunday",
+    "isOpen": false,
+    "openTime": "08:30:00",
+    "closeTime": "18:30:00",
+    "id": "df1ca714-010c-bd96-ac1c-7542cd22e62b",
+    "version": 1,
+    "createdAt": "2026-07-28T03:55:56.833198Z",
+    "updatedAt": "2026-07-28T03:55:56.833198Z"
+  }
+]

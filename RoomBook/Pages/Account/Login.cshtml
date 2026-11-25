@@ -1,0 +1,60 @@
+@page
+@model RoomBook.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "登入";
+    Layout = "_LayoutPlain";
+}
+
+<div class="login-wrap mx-auto">
+    <div class="text-center mb-4">
+        <div class="login-logo"><i class="bi bi-door-open-fill"></i></div>
+        <h1 class="h3 mt-2">RoomBook</h1>
+        <p class="text-muted mb-0">公司內部會議室預約系統</p>
+    </div>
+
+    @if (Model.Reset)
+    {
+        <div class="alert alert-success"><i class="bi bi-check-circle me-2"></i>已重置為範例資料，請重新登入。</div>
+    }
+
+    <form method="post" class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div class="mb-3">
+                <label asp-for="Input.Account" class="form-label"></label>
+                <input asp-for="Input.Account" class="form-control form-control-lg" autocomplete="username" autofocus />
+                <span asp-validation-for="Input.Account" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Input.Password" class="form-label"></label>
+                <input asp-for="Input.Password" class="form-control form-control-lg" autocomplete="current-password" />
+                <span asp-validation-for="Input.Password" class="text-danger small"></span>
+            </div>
+            <div class="form-check mb-3">
+                <input asp-for="Input.RememberMe" class="form-check-input" />
+                <label asp-for="Input.RememberMe" class="form-check-label"></label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg w-100">登入</button>
+        </div>
+    </form>
+
+    @if (Model.ShowDemoHint)
+    {
+        <div class="card border-0 bg-light mt-3">
+            <div class="card-body small">
+                <div class="fw-semibold mb-1"><i class="bi bi-info-circle me-1"></i>Demo 帳號（僅 Development 顯示）</div>
+                <div>密碼皆為 <code>RoomBook#2026</code></div>
+                <ul class="mb-0 mt-1 ps-3">
+                    <li><code>admin</code>　林怡君（管理員）</li>
+                    <li><code>zhihao</code> 陳志豪、<code>yating</code> 王雅婷、<code>jiaming</code> 張家銘、<code>hsinyi</code> 李欣怡、<code>bohan</code> 黃柏翰</li>
+                    <li><code>guanyu</code> 劉冠宇（違規暫停預約）、<code>shufen</code> 吳淑芬（已停用）</li>
+                </ul>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

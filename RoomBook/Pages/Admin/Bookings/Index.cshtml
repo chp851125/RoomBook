@@ -1,0 +1,82 @@
+@page
+@model RoomBook.Pages.Admin.Bookings.IndexModel
+@inject ITimeProvider Time
+@{
+    ViewData["Title"] = "所有預約";
+    ViewData["Nav"] = "admin";
+    var returnUrl = Request.Path + Request.QueryString;
+}
+
+<div class="d-flex align-items-center gap-2 mb-3">
+    <h1 class="h4 mb-0 me-auto"><i class="bi bi-gear me-2"></i>管理後台</h1>
+    <a class="btn btn-primary btn-sm" asp-page="/Bookings/Create"><i class="bi bi-person-plus me-1"></i>代為預約</a>
+</div>
+<partial name="_AdminNav" model='"bookings"' />
+
+<form method="get" class="card border-0 shadow-sm mb-3">
+    <div class="card-body py-2">
+        <div class="row g-2">
+            <div class="col-12 col-md-3"><input type="search" name="q" value="@Model.Q" class="form-control form-control-sm" placeholder="主題、預約人、單號、會議室" /></div>
+            <div class="col-6 col-md-2">
+                <select name="status" class="form-select form-select-sm" aria-label="狀態">
+                    <option value="">全部狀態</option>
+                    @foreach (var s in Enum.GetValues<BookingStatus>()) { <option value="@s" selected="@(Model.Status == s)">@(s switch { BookingStatus.Confirmed => "已確認", BookingStatus.Pending => "待審核", BookingStatus.Cancelled => "已取消", BookingStatus.Rejected => "已駁回", BookingStatus.Finished => "已結束", _ => "未簽到釋出" })</option> }
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <select name="roomId" class="form-select form-select-sm" aria-label="會議室">
+                    <option value="">全部會議室</option>
+                    @foreach (var r in Model.Rooms) { <option value="@r.Id" selected="@(Model.RoomId == r.Id)">@r.Name</option> }
+                </select>
+            </div>
+            <div class="col-6 col-md-2"><input type="date" name="from" value="@Model.From?.ToString("yyyy-MM-dd")" class="form-control form-control-sm" aria-label="起日" /></div>
+            <div class="col-6 col-md-2"><input type="date" name="to" value="@Model.To?.ToString("yyyy-MM-dd")" class="form-control form-control-sm" aria-label="迄日" /></div>
+            <div class="col-12 col-md-1 d-flex gap-1"><button class="btn btn-primary btn-sm flex-fill"><i class="bi bi-search"></i></button><a class="btn btn-outline-secondary btn-sm" asp-page="/Admin/Bookings/Index"><i class="bi bi-x-lg"></i></a></div>
+        </div>
+    </div>
+</form>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 d-none d-md-table">
+            <thead class="table-light"><tr><th>時間</th><th>主題</th><th>會議室</th><th>預約人</th><th>狀態</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var i in Model.Result.Items)
+            {
+                <tr>
+                    <td class="text-nowrap small">@Time.Format(i.StartUtc, "MM/dd HH:mm")–@Time.Format(i.EndUtc, "HH:mm")</td>
+                    <td><a class="text-decoration-none" asp-page="/Bookings/Details" asp-route-id="@i.BookingId" asp-route-seriesId="@(i.BookingId is null ? i.SeriesId : null)" asp-route-date="@(i.BookingId is null ? i.OccurrenceDate?.ToString("yyyy-MM-dd") : null)">@i.Title</a> @if (i.IsSeries) { <i class="bi bi-arrow-repeat text-muted"></i> }<div class="small text-muted">@i.BookingNo</div></td>
+                    <td>@i.RoomName</td>
+                    <td>@i.OrganizerName</td>
+                    <td><partial name="_BookingStatusBadge" model="i.Status" /></td>
+                    <td class="text-end">
+                        @if (i.CanCancel)
+                        {
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-cancel data-id="@i.BookingId" data-series="@i.SeriesId"
+                                    data-date="@i.OccurrenceDate?.ToString("yyyy-MM-dd")" data-return="@returnUrl" data-title="@i.Title" data-forced="true">強制取消</button>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <div class="d-md-none list-group list-group-flush">
+            @foreach (var i in Model.Result.Items)
+            {
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between"><strong class="small">@Time.Format(i.StartUtc, "MM/dd HH:mm")–@Time.Format(i.EndUtc, "HH:mm")</strong><partial name="_BookingStatusBadge" model="i.Status" /></div>
+                    <a class="text-decoration-none" asp-page="/Bookings/Details" asp-route-id="@i.BookingId" asp-route-seriesId="@(i.BookingId is null ? i.SeriesId : null)" asp-route-date="@(i.BookingId is null ? i.OccurrenceDate?.ToString("yyyy-MM-dd") : null)">@i.Title</a>
+                    <div class="small text-muted">@i.RoomName · @i.OrganizerName</div>
+                    @if (i.CanCancel)
+                    {
+                        <button type="button" class="btn btn-sm btn-outline-danger mt-2" data-cancel data-id="@i.BookingId" data-series="@i.SeriesId"
+                                data-date="@i.OccurrenceDate?.ToString("yyyy-MM-dd")" data-return="@returnUrl" data-title="@i.Title" data-forced="true">強制取消</button>
+                    }
+                </div>
+            }
+        </div>
+        @if (Model.Result.Items.Count == 0) { <div class="text-center text-muted py-4">沒有符合的預約。</div> }
+    </div>
+</div>
+<partial name="_Pager" model="(Model.Result.Page, Model.Result.TotalPages, Model.Result.Total, (Func<int, string?>)Model.PageUrl)" />
+<partial name="_CancelModal" />

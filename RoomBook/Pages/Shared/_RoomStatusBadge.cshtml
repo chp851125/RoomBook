@@ -1,0 +1,7 @@
+@model RoomStatus
+@switch (Model)
+{
+    case RoomStatus.Active: <span class="badge text-bg-success">可預約</span> break;
+    case RoomStatus.Maintenance: <span class="badge text-bg-warning">維護中</span> break;
+    default: <span class="badge text-bg-secondary">停用</span> break;
+}

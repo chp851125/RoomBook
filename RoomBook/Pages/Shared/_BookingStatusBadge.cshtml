@@ -1,0 +1,10 @@
+@model BookingStatus
+@switch (Model)
+{
+    case BookingStatus.Confirmed: <span class="badge text-bg-success">已確認</span> break;
+    case BookingStatus.Pending: <span class="badge text-bg-warning">待審核</span> break;
+    case BookingStatus.Cancelled: <span class="badge text-bg-secondary">已取消</span> break;
+    case BookingStatus.Rejected: <span class="badge text-bg-danger">已駁回</span> break;
+    case BookingStatus.Finished: <span class="badge text-bg-info">已結束</span> break;
+    default: <span class="badge text-bg-dark">未簽到釋出</span> break;
+}

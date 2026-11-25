@@ -1,0 +1,58 @@
+@page
+@model RoomBook.Pages.Admin.Audit.IndexModel
+@inject ITimeProvider Time
+@{
+    ViewData["Title"] = "稽核紀錄";
+    ViewData["Nav"] = "admin";
+}
+
+<div class="d-flex align-items-center gap-2 mb-3">
+    <h1 class="h4 mb-0 me-auto"><i class="bi bi-gear me-2"></i>管理後台</h1>
+    <a class="btn btn-success btn-sm" asp-page-handler="Export" asp-route-q="@Model.Q" asp-route-userId="@Model.UserId" asp-route-action="@Model.Action"
+       asp-route-from="@Model.From?.ToString("yyyy-MM-dd")" asp-route-to="@Model.To?.ToString("yyyy-MM-dd")"><i class="bi bi-file-earmark-excel me-1"></i>匯出 Excel</a>
+</div>
+<partial name="_AdminNav" model='"audit"' />
+
+<form method="get" class="card border-0 shadow-sm mb-3">
+    <div class="card-body py-2">
+        <div class="row g-2">
+            <div class="col-12 col-md-3"><input type="search" name="q" value="@Model.Q" class="form-control form-control-sm" placeholder="關鍵字（動作、對象、說明、IP）" /></div>
+            <div class="col-6 col-md-2">
+                <select name="userId" class="form-select form-select-sm" aria-label="使用者"><option value="">全部使用者</option>
+                    @foreach (var u in Model.Users) { <option value="@u.Id" selected="@(Model.UserId == u.Id)">@u.DisplayName</option> }
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <select name="action" class="form-select form-select-sm" aria-label="動作"><option value="">全部動作</option>
+                    @foreach (var a in Model.Actions) { <option value="@a" selected="@(Model.Action == a)">@a</option> }
+                </select>
+            </div>
+            <div class="col-6 col-md-2"><input type="date" name="from" value="@Model.From?.ToString("yyyy-MM-dd")" class="form-control form-control-sm" aria-label="起日" /></div>
+            <div class="col-6 col-md-2"><input type="date" name="to" value="@Model.To?.ToString("yyyy-MM-dd")" class="form-control form-control-sm" aria-label="迄日" /></div>
+            <div class="col-12 col-md-1 d-flex gap-1"><button class="btn btn-primary btn-sm flex-fill"><i class="bi bi-search"></i></button><a class="btn btn-outline-secondary btn-sm" asp-page="/Admin/Audit/Index"><i class="bi bi-x-lg"></i></a></div>
+        </div>
+    </div>
+</form>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>時間</th><th>誰</th><th>動作</th><th>對象</th><th>說明</th><th>IP</th></tr></thead>
+            <tbody>
+            @foreach (var l in Model.Result.Items)
+            {
+                <tr>
+                    <td class="text-nowrap small">@Time.Format(l.OccurredAtUtc, "MM/dd HH:mm:ss")</td>
+                    <td class="text-nowrap">@l.UserName</td>
+                    <td class="fw-semibold">@l.Action</td>
+                    <td class="small"><span class="text-muted">@l.TargetType</span> @l.TargetId</td>
+                    <td class="small">@l.Detail</td>
+                    <td class="small text-muted text-nowrap">@l.IpAddress</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.Result.Items.Count == 0) { <div class="text-center text-muted py-4">沒有符合的紀錄。</div> }
+</div>
+<partial name="_Pager" model="(Model.Result.Page, Model.Result.TotalPages, Model.Result.Total, (Func<int, string?>)Model.PageUrl)" />

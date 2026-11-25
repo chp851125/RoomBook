@@ -1,0 +1,42 @@
+@page "{id:guid?}"
+@model RoomBook.Pages.Admin.Rooms.EditModel
+@{
+    ViewData["Title"] = Model.IsNew ? "新增會議室" : "編輯會議室";
+    ViewData["Nav"] = "admin";
+}
+
+<h1 class="h4 mb-3"><i class="bi bi-gear me-2"></i>管理後台</h1>
+<partial name="_AdminNav" model='"rooms"' />
+
+<div class="card border-0 shadow-sm" style="max-width: 46rem">
+    <div class="card-header bg-white fw-semibold">@ViewData["Title"]</div>
+    <form method="post" class="card-body">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+        <input type="hidden" asp-for="Input.Id" /><input type="hidden" asp-for="Input.Version" />
+        <div class="row g-3">
+            <div class="col-12 col-md-8"><label asp-for="Input.Name" class="form-label">名稱</label><input asp-for="Input.Name" class="form-control" maxlength="40" required /></div>
+            <div class="col-6 col-md-2"><label asp-for="Input.Floor" class="form-label">樓層</label><input asp-for="Input.Floor" type="number" class="form-control" /></div>
+            <div class="col-6 col-md-2"><label asp-for="Input.Capacity" class="form-label">容納人數</label><input asp-for="Input.Capacity" type="number" min="1" class="form-control" /></div>
+            <div class="col-12"><label asp-for="Input.EquipmentText" class="form-label">設備</label><input asp-for="Input.EquipmentText" class="form-control" placeholder="投影機、視訊、白板、電視" /><div class="form-text">以逗號、頓號或空白分隔。</div></div>
+            <div class="col-12"><label asp-for="Input.Description" class="form-label">簡介</label><textarea asp-for="Input.Description" rows="3" class="form-control" maxlength="500"></textarea></div>
+            <div class="col-6 col-md-4">
+                <label asp-for="Input.Status" class="form-label">狀態</label>
+                <select asp-for="Input.Status" class="form-select">
+                    <option value="Active">可預約</option><option value="Maintenance">維護中</option><option value="Disabled">停用</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-4"><label asp-for="Input.SortOrder" class="form-label">排序</label><input asp-for="Input.SortOrder" type="number" class="form-control" /></div>
+            <div class="col-12 col-md-4 d-flex align-items-end">
+                <div class="form-check form-switch"><input asp-for="Input.RequiresApproval" class="form-check-input" role="switch" /><label asp-for="Input.RequiresApproval" class="form-check-label">預約需管理員審核</label></div>
+            </div>
+            @if (!Model.IsNew && Model.FutureCount > 0)
+            {
+                <div class="col-12"><div class="alert alert-warning mb-0 py-2 small">
+                    這間會議室還有 <strong>@Model.FutureCount</strong> 筆未來預約；改為維護中或停用不會自動取消它們。
+                    <div class="form-check mt-1"><input asp-for="Input.ConfirmDisable" class="form-check-input" /><label asp-for="Input.ConfirmDisable" class="form-check-label">仍要停用／維護</label></div>
+                </div></div>
+            }
+        </div>
+        <div class="d-flex gap-2 mt-4"><button class="btn btn-primary">儲存</button><a class="btn btn-outline-secondary" asp-page="/Admin/Rooms/Index">返回</a></div>
+    </form>
+</div>

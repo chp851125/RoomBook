@@ -1,0 +1,23 @@
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content" method="post" asp-page="/MyBookings/Index" asp-page-handler="Cancel" id="cancelForm">
+            <input type="hidden" name="id" />
+            <input type="hidden" name="seriesId" />
+            <input type="hidden" name="date" />
+            <input type="hidden" name="returnUrl" />
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelModalLabel">取消預約</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">確定要取消「<strong id="cancelTitle"></strong>」嗎？參與者會收到通知。</p>
+                <label class="form-label small" for="cancelReason">原因 <span id="cancelReasonHint" class="text-muted">（選填）</span></label>
+                <input id="cancelReason" name="reason" class="form-control" maxlength="200" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">返回</button>
+                <button type="submit" class="btn btn-danger">確認取消</button>
+            </div>
+        </form>
+    </div>
+</div>

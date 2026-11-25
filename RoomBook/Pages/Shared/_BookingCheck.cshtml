@@ -1,0 +1,71 @@
+@using RoomBook.Application.Dtos
+@model (BookingResult Result, bool Live)
+@inject ITimeProvider Time
+@{
+    var r = Model.Result;
+    string Range(DateTime s, DateTime e) => $"{Time.Format(s, "HH:mm")}–{Time.Format(e, "HH:mm")}";
+    var isSeries = r.Series is not null || r.ConflictDates.Count > 0 && r.RoomConflicts.Select(c => c.Date).Distinct().Count() > 1;
+}
+
+@foreach (var err in r.Errors)
+{
+    <div class="alert alert-danger py-2 mb-2"><i class="bi bi-x-octagon me-1"></i>@err</div>
+}
+
+@if (r.RoomConflicts.Count > 0)
+{
+    <div class="alert @(r.Outcome == BookingOutcome.NeedsConflictDecision ? "alert-warning" : "alert-danger") py-2 mb-2">
+        <div class="fw-semibold mb-1"><i class="bi bi-exclamation-octagon me-1"></i>會議室時段衝突</div>
+        <ul class="mb-0 ps-3 small">
+            @foreach (var c in r.RoomConflicts)
+            {
+                <li>@c.Date.ToString("MM/dd") @Range(c.StartUtc, c.EndUtc)：已被 <strong>@c.OrganizerName</strong> 預約「@c.Title」</li>
+            }
+        </ul>
+        @if (r.Outcome == BookingOutcome.NeedsConflictDecision)
+        {
+            <div class="small mt-2">共 @r.ConflictDates.Count 個日期衝突。送出時可選擇「略過衝突日期」建立其餘，或「全部取消」。</div>
+            @if (!Model.Live)
+            {
+                <div class="d-flex flex-wrap gap-2 mt-2">
+                    <button type="submit" class="btn btn-warning btn-sm" name="Input.ConflictPolicy" value="Skip">略過衝突日期並建立</button>
+                    <button type="submit" class="btn btn-outline-danger btn-sm" name="Input.ConflictPolicy" value="CancelAll">全部取消</button>
+                </div>
+            }
+        }
+    </div>
+}
+
+@if (r.ParticipantWarnings.Count > 0)
+{
+    <div class="alert alert-warning py-2 mb-2">
+        <div class="fw-semibold mb-1"><i class="bi bi-people me-1"></i>參與者時間重疊（警告）</div>
+        <ul class="mb-0 ps-3 small">
+            @foreach (var w in r.ParticipantWarnings)
+            {
+                <li>@w.Date.ToString("MM/dd")：<strong>@w.UserName</strong> 在 @Range(w.StartUtc, w.EndUtc) 已有會議「@w.Title」（@w.RoomName）</li>
+            }
+        </ul>
+        @if (r.Outcome == BookingOutcome.NeedsParticipantConfirm && !Model.Live)
+        {
+            <button type="submit" class="btn btn-warning btn-sm mt-2" name="Input.ConfirmParticipantConflicts" value="true">仍然送出</button>
+        }
+    </div>
+}
+
+@if (r.SkippedDates.Count > 0 && r.Errors.Count == 0)
+{
+    <div class="alert alert-info py-2 mb-2 small">
+        <i class="bi bi-calendar-x me-1"></i>以下日期將被略過：
+        @string.Join("；", r.SkippedDates.Take(8).Select(s => $"{s.Date:MM/dd}（{s.Reason}）"))@(r.SkippedDates.Count > 8 ? $" …等 {r.SkippedDates.Count} 天" : "")
+    </div>
+}
+
+@if (r.Outcome == BookingOutcome.Created && r.Errors.Count == 0)
+{
+    <div class="alert alert-success py-2 mb-2">
+        <i class="bi bi-check-circle me-1"></i>
+        @(r.Series is null && r.OccurrenceCount <= 1 ? "這個時段可以預約。" : $"可建立 {r.OccurrenceCount} 次週期預約。")
+        @if (r.RequiresApproval) { <span class="d-block small mt-1"><i class="bi bi-hourglass-split me-1"></i>此會議室需審核：送出後進入「待審核」，並先保留時段。</span> }
+    </div>
+}

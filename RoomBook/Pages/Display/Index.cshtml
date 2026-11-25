@@ -1,0 +1,35 @@
+@page "{roomId:guid}"
+@model RoomBook.Pages.Display.IndexModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>@Model.Board.RoomName - 會議室看板</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/display.css" asp-append-version="true" />
+</head>
+<body class="display-body">
+    <div id="board" data-url="@Url.Page("/Display/Index", "Board", new { roomId = Model.RoomId })" data-refresh="@Model.RefreshSeconds">
+        <partial name="_Board" model="Model.Board" />
+    </div>
+    <script>
+        (function () {
+            const el = document.getElementById('board');
+            const seconds = Number(el.dataset.refresh) || 30;
+            async function refresh() {
+                try {
+                    const r = await fetch(el.dataset.url, { cache: 'no-store' });
+                    if (r.ok) el.innerHTML = await r.text();
+                } catch (e) { /* 網路暫時中斷時保留上一次畫面 */ }
+            }
+            setInterval(refresh, seconds * 1000);
+        })();
+    </script>
+</body>
+</html>

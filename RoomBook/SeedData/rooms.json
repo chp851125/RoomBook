@@ -1,0 +1,106 @@
+[
+  {
+    "name": "雲海會議室",
+    "floor": 3,
+    "capacity": 24,
+    "equipment": [
+      "投影機",
+      "視訊",
+      "白板"
+    ],
+    "description": "3 樓大型會議室，配備雙投影與視訊會議系統，適合全員會議、客戶簡報與教育訓練。使用前需經管理員審核。",
+    "status": "Active",
+    "requiresApproval": true,
+    "sortOrder": 1,
+    "id": "b0f12a12-302b-5af1-cd5e-4c1b304bc9ff",
+    "version": 1,
+    "createdAt": "2026-07-28T03:55:56.833198Z",
+    "updatedAt": "2026-07-28T03:55:56.833198Z"
+  },
+  {
+    "name": "天際會議室",
+    "floor": 4,
+    "capacity": 20,
+    "equipment": [
+      "投影機",
+      "視訊",
+      "電視"
+    ],
+    "description": "4 樓大型會議室，視野良好，附大型電視牆與視訊設備，適合跨部門workshop與主管會議。使用前需經管理員審核。",
+    "status": "Active",
+    "requiresApproval": true,
+    "sortOrder": 2,
+    "id": "bee0584b-6086-f962-f71c-dfb82c6bd101",
+    "version": 1,
+    "createdAt": "2026-07-28T03:55:56.833198Z",
+    "updatedAt": "2026-07-28T03:55:56.833198Z"
+  },
+  {
+    "name": "星河會議室",
+    "floor": 3,
+    "capacity": 10,
+    "equipment": [
+      "投影機",
+      "白板"
+    ],
+    "description": "3 樓中型會議室，可容納 10 人，投影機與白板齊備，適合專案討論與部門會議。",
+    "status": "Active",
+    "requiresApproval": false,
+    "sortOrder": 3,
+    "id": "b9ec6aff-d35a-3b4e-be08-675a234d3e9e",
+    "version": 1,
+    "createdAt": "2026-07-28T03:55:56.833198Z",
+    "updatedAt": "2026-07-28T03:55:56.833198Z"
+  },
+  {
+    "name": "晨曦會議室",
+    "floor": 4,
+    "capacity": 8,
+    "equipment": [
+      "視訊",
+      "電視",
+      "白板"
+    ],
+    "description": "4 樓中型會議室，電視可無線投影，適合例行週會與遠端視訊會議。",
+    "status": "Active",
+    "requiresApproval": false,
+    "sortOrder": 4,
+    "id": "9b34b04a-2852-b1d1-c7f8-b80f50382e62",
+    "version": 1,
+    "createdAt": "2026-07-28T03:55:56.833198Z",
+    "updatedAt": "2026-07-28T03:55:56.833198Z"
+  },
+  {
+    "name": "靜心討論室",
+    "floor": 2,
+    "capacity": 4,
+    "equipment": [
+      "白板",
+      "電視"
+    ],
+    "description": "2 樓小型討論室，安靜獨立，適合一對一面談、面試與小組快速討論。",
+    "status": "Active",
+    "requiresApproval": false,
+    "sortOrder": 5,
+    "id": "c61c4b8c-0f5e-77a5-0aa4-007ef807d6aa",
+    "version": 1,
+    "createdAt": "2026-07-28T03:55:56.833198Z",
+    "updatedAt": "2026-07-28T03:55:56.833198Z"
+  },
+  {
+    "name": "拾光討論室",
+    "floor": 2,
+    "capacity": 4,
+    "equipment": [
+      "白板"
+    ],
+    "description": "2 樓小型討論室。目前空調設備維修中，預計兩週後恢復使用。",
+    "status": "Maintenance",
+    "requiresApproval": false,
+    "sortOrder": 6,
+    "id": "7b6e41de-3637-d6af-993b-f2621a3feb85",
+    "version": 1,
+    "createdAt": "2026-07-28T03:55:56.833198Z",
+    "updatedAt": "2026-07-28T03:55:56.833198Z"
+  }
+]

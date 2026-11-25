@@ -1,0 +1,44 @@
+@page
+@model RoomBook.Pages.Admin.Users.IndexModel
+@{
+    ViewData["Title"] = "使用者管理";
+    ViewData["Nav"] = "admin";
+}
+
+<div class="d-flex align-items-center gap-2 mb-3">
+    <h1 class="h4 mb-0 me-auto"><i class="bi bi-gear me-2"></i>管理後台</h1>
+    <a class="btn btn-primary btn-sm" asp-page="/Admin/Users/Edit"><i class="bi bi-person-plus me-1"></i>新增使用者</a>
+</div>
+<partial name="_AdminNav" model='"users"' />
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-12 col-md-5"><input type="search" name="q" value="@Model.Q" class="form-control form-control-sm" placeholder="搜尋姓名、帳號、Email" /></div>
+    <div class="col-6 col-md-3"><div class="form-check pt-1"><input type="checkbox" class="form-check-input" id="susp" name="suspended" value="true" checked="@Model.Suspended" /><label for="susp" class="form-check-label small">只看暫停預約中</label></div></div>
+    <div class="col-6 col-md-2 d-flex gap-1"><button class="btn btn-primary btn-sm flex-fill">搜尋</button><a class="btn btn-outline-secondary btn-sm" asp-page="/Admin/Users/Index">清除</a></div>
+</form>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>姓名</th><th>帳號</th><th>部門</th><th>角色</th><th>狀態</th><th>違規</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var u in Model.Users)
+            {
+                <tr class="@(u.IsActive ? "" : "text-muted")">
+                    <td class="fw-semibold">@u.DisplayName<div class="small text-muted fw-normal">@u.JobTitle</div></td>
+                    <td>@u.Account<div class="small text-muted">@u.Email</div></td>
+                    <td>@Model.Departments.GetValueOrDefault(u.DepartmentId)</td>
+                    <td>@(u.Role == UserRole.Admin ? "管理員" : "員工")</td>
+                    <td>
+                        @if (!u.IsActive) { <span class="badge text-bg-secondary">已停用</span> }
+                        else if (Model.IsSuspended(u)) { <span class="badge text-bg-danger">暫停預約</span> }
+                        else { <span class="badge text-bg-success">正常</span> }
+                    </td>
+                    <td>@u.ViolationPoints 點</td>
+                    <td class="text-end"><a class="btn btn-sm btn-outline-primary" asp-page="/Admin/Users/Edit" asp-route-id="@u.Id">管理</a></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

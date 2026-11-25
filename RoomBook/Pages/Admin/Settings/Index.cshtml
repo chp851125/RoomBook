@@ -1,0 +1,46 @@
+@page
+@model RoomBook.Pages.Admin.Settings.IndexModel
+@{
+    ViewData["Title"] = "規則設定";
+    ViewData["Nav"] = "admin";
+    var index = 0;
+    var boolKeys = new HashSet<string> { "Booking.AllowEmployeePast", "Display.ShowTitle" };
+}
+
+<h1 class="h4 mb-3"><i class="bi bi-gear me-2"></i>管理後台</h1>
+<partial name="_AdminNav" model='"settings"' />
+
+<form method="post">
+    @foreach (var group in Model.Settings.GroupBy(s => s.Group))
+    {
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white fw-semibold">@group.Key</div>
+            <div class="card-body">
+                @foreach (var s in group)
+                {
+                    var i = index++;
+                    <div class="row g-2 align-items-center mb-2">
+                        <input type="hidden" name="Values[@i].Key" value="@s.Key" />
+                        <input type="hidden" name="Values[@i].Version" value="@s.Version" />
+                        <label class="col-12 col-md-7 col-form-label" for="v-@i">@s.Description <span class="text-muted small d-block d-md-inline">(@s.Key)</span></label>
+                        <div class="col-12 col-md-5">
+                            @if (boolKeys.Contains(s.Key))
+                            {
+                                <select id="v-@i" name="Values[@i].Value" class="form-select form-select-sm">
+                                    <option value="true" selected="@(Model.ValueFor(s) == "true")">是</option>
+                                    <option value="false" selected="@(Model.ValueFor(s) == "false")">否</option>
+                                </select>
+                            }
+                            else
+                            {
+                                <input id="v-@i" name="Values[@i].Value" value="@Model.ValueFor(s)" class="form-control form-control-sm" inputmode="numeric" />
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    <button class="btn btn-primary">儲存設定</button>
+    <span class="text-muted small ms-2">所有變更都會寫入稽核紀錄。</span>
+</form>

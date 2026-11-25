@@ -1,0 +1,15 @@
+[
+  {
+    "seriesId": "2582ff86-138d-1a2b-02af-d56dcd8a4c71",
+    "occurrenceDate": "2026-11-30",
+    "isCancelled": true,
+    "newStartUtc": null,
+    "newEndUtc": null,
+    "reason": "技術主管出差，該週暫停一次。",
+    "createdById": "053bb18c-29a6-95a8-3066-6d9bedddf069",
+    "id": "b8a08469-13eb-3f94-43a1-f830e17b0ac9",
+    "version": 1,
+    "createdAt": "2026-11-23T03:55:56.833198Z",
+    "updatedAt": "2026-11-23T03:55:56.833198Z"
+  }
+]

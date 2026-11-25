@@ -1,0 +1,45 @@
+@using RoomBook.Pages.Display
+@model BoardModel
+<div class="board board-@Model.State">
+    <header class="board-head">
+        <div>
+            <h1 class="board-room">@Model.RoomName</h1>
+            <div class="board-meta">@Model.Floor 樓 · 可容納 @Model.Capacity 人</div>
+        </div>
+        <div class="board-clock">@Model.NowText</div>
+    </header>
+
+    <section class="board-state">
+        <div class="board-state-text">@Model.StateText</div>
+        @if (Model.State == "busy")
+        {
+            <div class="board-current-title">@Model.CurrentTitle</div>
+            <div class="board-current-sub">@Model.CurrentTime · @Model.CurrentOrganizer</div>
+        }
+        @if (!string.IsNullOrEmpty(Model.NextFree))
+        {
+            <div class="board-next"><i class="bi bi-hourglass-split me-2"></i>@(Model.State == "busy" ? "下一個空檔：" : "空檔：")@Model.NextFree</div>
+        }
+    </section>
+
+    <section class="board-today">
+        <h2>今日會議</h2>
+        @if (Model.Today.Count == 0)
+        {
+            <div class="board-empty">今天沒有預約</div>
+        }
+        else
+        {
+            <ul class="board-list">
+                @foreach (var row in Model.Today)
+                {
+                    <li class="@(row.IsCurrent ? "current" : row.IsPast ? "past" : "")">
+                        <span class="t">@row.Time</span>
+                        <span class="n">@(row.Title ?? "已預約")</span>
+                        <span class="o">@row.Organizer</span>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+</div>

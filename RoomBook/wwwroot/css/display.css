@@ -1,0 +1,29 @@
+/* 會議室看板：全螢幕友善、高對比 */
+.display-body { background: #0f172a; color: #f8fafc; min-height: 100vh; margin: 0; }
+.board { min-height: 100vh; display: flex; flex-direction: column; padding: 2vw 3vw; gap: 2vw; }
+.board-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.board-room { font-size: clamp(2rem, 5vw, 4.5rem); font-weight: 700; margin: 0; }
+.board-meta { font-size: clamp(1rem, 2vw, 1.6rem); color: #94a3b8; }
+.board-clock { font-size: clamp(1rem, 2.4vw, 2rem); color: #cbd5e1; text-align: right; }
+.board-state {
+  border-radius: 1.5rem; padding: 3vw; background: #14532d; display: flex; flex-direction: column; gap: 1vw;
+}
+.board-busy .board-state { background: #7f1d1d; }
+.board-closed .board-state, .board-maintenance .board-state { background: #334155; }
+.board-state-text { font-size: clamp(3rem, 10vw, 9rem); font-weight: 800; line-height: 1; }
+.board-current-title { font-size: clamp(1.6rem, 4vw, 3.4rem); font-weight: 600; }
+.board-current-sub { font-size: clamp(1.1rem, 2.4vw, 2rem); color: #fecaca; }
+.board-next { font-size: clamp(1.1rem, 2.6vw, 2.2rem); margin-top: .5vw; }
+.board-today { flex: 1; }
+.board-today h2 { font-size: clamp(1.2rem, 2.4vw, 2rem); color: #94a3b8; margin-bottom: 1vw; }
+.board-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .6vw; }
+.board-list li {
+  display: grid; grid-template-columns: 11rem 1fr auto; gap: 1.5rem; align-items: baseline;
+  padding: .9rem 1.4rem; background: #1e293b; border-radius: .9rem; font-size: clamp(1.1rem, 2.4vw, 2rem);
+}
+.board-list li.current { background: #b91c1c; }
+.board-list li.past { opacity: .45; }
+.board-list .t { font-variant-numeric: tabular-nums; font-weight: 600; }
+.board-list .o { color: #cbd5e1; font-size: .8em; }
+.board-empty { font-size: clamp(1.1rem, 2.4vw, 2rem); color: #64748b; }
+@media (max-width: 640px) { .board-list li { grid-template-columns: 1fr; gap: .2rem; } }

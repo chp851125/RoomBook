@@ -1,0 +1,54 @@
+@using RoomBook.Application.Dtos
+@model (MyBookingItem Item, string ReturnUrl)
+@{
+    var i = Model.Item;
+    var detailRoute = i.BookingId is { } bid ? new Dictionary<string, string?> { ["id"] = bid.ToString() }
+        : new Dictionary<string, string?> { ["seriesId"] = i.SeriesId.ToString(), ["date"] = i.OccurrenceDate?.ToString("yyyy-MM-dd") };
+}
+<div class="d-flex flex-wrap gap-2 booking-actions">
+    @if (i.CanCheckIn)
+    {
+        <form method="post" asp-page="/MyBookings/Index" asp-page-handler="CheckIn" asp-all-route-data="@detailRoute.ToDictionary(k => k.Key, k => k.Value!)" class="flex-grow-1 flex-md-grow-0">
+            <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+            <button class="btn btn-success w-100"><i class="bi bi-qr-code-scan me-1"></i>簽到</button>
+        </form>
+    }
+    @if (i.CanExtend)
+    {
+        <div class="dropdown flex-grow-1 flex-md-grow-0">
+            <button class="btn btn-outline-primary dropdown-toggle w-100" data-bs-toggle="dropdown"><i class="bi bi-plus-circle me-1"></i>延長</button>
+            <ul class="dropdown-menu">
+                @foreach (var m in new[] { 15, 30, 60 })
+                {
+                    <li>
+                        <form method="post" asp-page="/MyBookings/Index" asp-page-handler="Extend" asp-all-route-data="@detailRoute.ToDictionary(k => k.Key, k => k.Value!)">
+                            <input type="hidden" name="minutes" value="@m" />
+                            <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+                            <button class="dropdown-item py-2">延長 @m 分鐘</button>
+                        </form>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+    @if (i.CanFinish)
+    {
+        <form method="post" asp-page="/MyBookings/Index" asp-page-handler="Finish" asp-all-route-data="@detailRoute.ToDictionary(k => k.Key, k => k.Value!)"
+              class="flex-grow-1 flex-md-grow-0" onsubmit="return confirm('確定要提前結束嗎？剩餘時段會釋出給其他人。');">
+            <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+            <button class="btn btn-outline-danger w-100"><i class="bi bi-stop-circle me-1"></i>提前結束</button>
+        </form>
+    }
+    @if (i.CanEdit)
+    {
+        <a class="btn btn-outline-secondary flex-grow-1 flex-md-grow-0" asp-page="/Bookings/Create" asp-route-editId="@i.BookingId"><i class="bi bi-pencil me-1"></i>修改</a>
+    }
+    @if (i.CanCancel)
+    {
+        <button type="button" class="btn btn-outline-danger flex-grow-1 flex-md-grow-0" data-cancel
+                data-id="@i.BookingId" data-series="@i.SeriesId" data-date="@i.OccurrenceDate?.ToString("yyyy-MM-dd")"
+                data-return="@Model.ReturnUrl" data-title="@i.Title" data-forced="@(i.OrganizerName != User.Identity?.Name)">
+            <i class="bi bi-x-circle me-1"></i>取消
+        </button>
+    }
+</div>

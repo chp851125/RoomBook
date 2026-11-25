@@ -1,0 +1,63 @@
+@page
+@model RoomBook.Pages.Bookings.IndexModel
+@{
+    ViewData["Title"] = "行事曆";
+    ViewData["Nav"] = "calendar";
+}
+@section Styles {
+    <style>
+        .fc { --fc-border-color: #dee2e6; font-size: .9rem; }
+        .fc-event-pending { opacity: .8; border-style: dashed !important; }
+        .fc-event-finished { filter: grayscale(1); opacity: .6; }
+        .fc .fc-toolbar-title { font-size: 1.1rem; }
+        .fc-event { cursor: pointer; }
+    </style>
+}
+
+<div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+    <h1 class="h4 mb-0 me-auto">預約行事曆</h1>
+    <div class="btn-group btn-group-sm" id="viewSwitch" role="group" aria-label="檢視">
+        <button type="button" class="btn btn-outline-primary" data-view="timeGridDay">日</button>
+        <button type="button" class="btn btn-outline-primary" data-view="timeGridWeek">週</button>
+        <button type="button" class="btn btn-outline-primary" data-view="dayGridMonth">月</button>
+    </div>
+    <a class="btn btn-primary btn-sm d-none d-md-inline-flex" asp-page="/Bookings/Create"><i class="bi bi-plus-lg me-1"></i>新增預約</a>
+</div>
+
+<div class="row g-2 mb-2">
+    <div class="col-7 col-md-4">
+        <select id="roomSel" class="form-select form-select-sm" aria-label="會議室">
+            <option value="">全部會議室</option>
+            @foreach (var r in Model.Rooms)
+            {
+                <option value="@r.Id" selected="@(Model.RoomId == r.Id)">@r.Name（@r.Floor 樓）</option>
+            }
+        </select>
+    </div>
+    <div class="col-5 col-md-3">
+        <select id="floorSel" class="form-select form-select-sm" aria-label="樓層">
+            <option value="">所有樓層</option>
+            @foreach (var f in Model.Floors)
+            {
+                <option value="@f" selected="@(Model.Floor == f)">@f 樓</option>
+            }
+        </select>
+    </div>
+    <div class="col-12 col-md-5 d-flex flex-wrap gap-2 align-items-center small text-muted">
+        @foreach (var r in Model.Rooms)
+        {
+            <span class="d-inline-flex align-items-center"><span class="legend-dot" style="background:@Model.Colors[r.Id]"></span>@r.Name</span>
+        }
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm"><div class="card-body p-2 p-md-3"><div id="calendar"></div></div></div>
+<p class="small text-muted mt-2 mb-0"><i class="bi bi-hand-index me-1"></i>點選空白時段即可建立預約；拖曳可選取較長的時段。虛線為待審核，灰色為已結束，粉紅底為假日。</p>
+
+<script id="cal-config" type="application/json">@Html.Raw(Model.ConfigJson)</script>
+
+@section Scripts {
+    <script src="~/lib/fullcalendar/index.global.min.js"></script>
+    <script src="~/lib/fullcalendar/zh-tw.global.min.js"></script>
+    <script src="~/js/calendar.js" asp-append-version="true"></script>
+}

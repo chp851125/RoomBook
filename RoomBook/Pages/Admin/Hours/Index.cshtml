@@ -1,0 +1,56 @@
+@page
+@model RoomBook.Pages.Admin.Hours.IndexModel
+@{
+    ViewData["Title"] = "營業時段與假日";
+    ViewData["Nav"] = "admin";
+    string[] names = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+}
+
+<h1 class="h4 mb-3"><i class="bi bi-gear me-2"></i>管理後台</h1>
+<partial name="_AdminNav" model='"hours"' />
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold">每週營業時段</div>
+            <form method="post" asp-page-handler="SaveHours" class="card-body">
+                @for (var i = 0; i < Model.Hours.Count; i++)
+                {
+                    var h = Model.Hours[i];
+                    <div class="row g-2 align-items-center mb-2">
+                        <input type="hidden" name="Hours[@i].Day" value="@((int)h.Day)" />
+                        <input type="hidden" name="Hours[@i].Version" value="@h.Version" />
+                        <div class="col-3 fw-semibold">@names[(int)h.Day]</div>
+                        <div class="col-3"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" name="Hours[@i].IsOpen" value="true" checked="@h.IsOpen" id="open-@i" /><label class="form-check-label small" for="open-@i">營業</label></div></div>
+                        <div class="col-3"><input type="time" name="Hours[@i].OpenTime" value="@h.OpenTime.ToString("HH:mm")" class="form-control form-control-sm" aria-label="開始" /></div>
+                        <div class="col-3"><input type="time" name="Hours[@i].CloseTime" value="@h.CloseTime.ToString("HH:mm")" class="form-control form-control-sm" aria-label="結束" /></div>
+                    </div>
+                }
+                <div class="form-text mb-3">預約必須完整落在營業時段內；公休日與假日不可預約。</div>
+                <button class="btn btn-primary">儲存營業時段</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold">國定假日／公司休假</div>
+            <div class="card-body">
+                <form method="post" asp-page-handler="AddHoliday" class="row g-2 mb-3">
+                    <div class="col-12 col-md-4"><input type="date" name="HolidayDate" class="form-control form-control-sm" required aria-label="日期" /></div>
+                    <div class="col-8 col-md-5"><input name="HolidayName" class="form-control form-control-sm" placeholder="名稱，例如：中秋節" maxlength="30" required /></div>
+                    <div class="col-4 col-md-3"><button class="btn btn-primary btn-sm w-100">新增</button></div>
+                </form>
+                @if (Model.Holidays.Count == 0) { <div class="text-muted small">尚未設定假日。</div> }
+                <ul class="list-group list-group-flush">
+                    @foreach (var h in Model.Holidays)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span>@h.Date.ToString("yyyy/MM/dd") <span class="text-muted small">（@names[(int)h.Date.DayOfWeek]）</span> @h.Name</span>
+                            <form method="post" asp-page-handler="DeleteHoliday" asp-route-id="@h.Id" data-confirm="確定要刪除這個假日嗎？"><button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button></form>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

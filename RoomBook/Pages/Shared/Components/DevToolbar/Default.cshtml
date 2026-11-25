@@ -1,0 +1,22 @@
+@model RoomBook.ViewComponents.DevToolbarModel
+<div class="dev-toolbar d-flex align-items-center gap-1" title="僅 Development 環境顯示">
+    <span class="badge text-bg-warning d-none d-md-inline">DEV</span>
+    <form method="post" asp-page="/Account/SwitchUser" class="m-0">
+        <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+        <select name="userId" class="form-select form-select-sm dev-user-select" aria-label="快速切換使用者"
+                onchange="this.form.submit()">
+            @foreach (var u in Model.Users)
+            {
+                <option value="@u.Id" selected="@(u.Id == Model.CurrentUserId)">
+                    @u.DisplayName@(u.Role == UserRole.Admin ? "（管理員）" : "")
+                </option>
+            }
+        </select>
+    </form>
+    @if (Model.AllowReset)
+    {
+        <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#resetDataModal" title="重置為範例資料">
+            <i class="bi bi-arrow-counterclockwise"></i><span class="d-none d-xl-inline ms-1">重置範例資料</span>
+        </button>
+    }
+</div>

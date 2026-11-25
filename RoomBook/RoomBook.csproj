@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.105.1" />
+    <PackageReference Include="Serilog.AspNetCore" Version="11.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+  </ItemGroup>
+
+  <!-- 執行期資料不屬於專案內容（避免 dotnet watch 因寫入 JSON 而重啟） -->
+  <ItemGroup>
+    <Content Remove="App_Data\**;logs\**;outbox\**" />
+    <None Remove="App_Data\**;logs\**;outbox\**" />
+    <Compile Remove="App_Data\**;logs\**;outbox\**" />
+    <Watch Remove="App_Data\**;logs\**;outbox\**" />
+  </ItemGroup>
+
+  <!-- 範例資料隨發佈輸出 -->
+  <ItemGroup>
+    <Content Update="SeedData\**" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,52 @@
+@page
+@model RoomBook.Pages.Admin.Stats.IndexModel
+@inject ITimeProvider Time
+@{
+    ViewData["Title"] = "使用統計";
+    ViewData["Nav"] = "admin";
+    var today = Time.LocalToday;
+    string Q(int days) => Url.Page("/Admin/Stats/Index", new { from = today.AddDays(-days + 1).ToString("yyyy-MM-dd"), to = today.ToString("yyyy-MM-dd") })!;
+}
+@section Styles { <style>.chart-box { width: 100%; height: 320px; } .chart-box.tall { height: 380px; }</style> }
+
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <h1 class="h4 mb-0 me-auto"><i class="bi bi-gear me-2"></i>管理後台</h1>
+    <a class="btn btn-success btn-sm" asp-page-handler="Export" asp-route-from="@Model.From?.ToString("yyyy-MM-dd")" asp-route-to="@Model.To?.ToString("yyyy-MM-dd")"><i class="bi bi-file-earmark-excel me-1"></i>匯出 Excel</a>
+</div>
+<partial name="_AdminNav" model='"stats"' />
+
+<form method="get" class="card border-0 shadow-sm mb-3">
+    <div class="card-body py-2 d-flex flex-wrap gap-2 align-items-center">
+        <input type="date" name="from" value="@Model.From?.ToString("yyyy-MM-dd")" class="form-control form-control-sm w-auto" aria-label="起日" />
+        <span>–</span>
+        <input type="date" name="to" value="@Model.To?.ToString("yyyy-MM-dd")" class="form-control form-control-sm w-auto" aria-label="迄日" />
+        <button class="btn btn-primary btn-sm">查詢</button>
+        <span class="ms-auto d-flex gap-1">
+            <a class="btn btn-outline-secondary btn-sm" href="@Q(7)">近 7 天</a>
+            <a class="btn btn-outline-secondary btn-sm" href="@Q(30)">近 30 天</a>
+            <a class="btn btn-outline-secondary btn-sm" href="@Q(90)">近 90 天</a>
+        </span>
+    </div>
+</form>
+
+<div class="row g-3 mb-3">
+    <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-num">@Model.Data.BookingCount</div><div class="text-muted small">預約場次</div></div></div>
+    <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-num">@Model.Data.TotalHours<small class="fs-6 text-muted"> 小時</small></div><div class="text-muted small">使用總時數</div></div></div>
+    <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-num">@Model.Data.OverallRate<small class="fs-6 text-muted">%</small></div><div class="text-muted small">整體使用率</div></div></div>
+    <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-num">@Model.Data.CheckIn.CheckInRate<small class="fs-6 text-muted">%</small></div><div class="text-muted small">簽到率（未簽到 @Model.Data.CheckIn.NoShowRate%）</div></div></div>
+</div>
+
+<div class="row g-3">
+    <div class="col-12 col-xl-6"><div class="card border-0 shadow-sm"><div class="card-header bg-white fw-semibold">各會議室使用率</div><div class="card-body"><div id="chRooms" class="chart-box"></div></div></div></div>
+    <div class="col-12 col-xl-6"><div class="card border-0 shadow-sm"><div class="card-header bg-white fw-semibold">各部門使用時數</div><div class="card-body"><div id="chDepts" class="chart-box"></div></div></div></div>
+    <div class="col-12 col-xl-8"><div class="card border-0 shadow-sm"><div class="card-header bg-white fw-semibold">熱門時段（週間 × 時段，使用小時數）</div><div class="card-body"><div id="chHeat" class="chart-box tall"></div></div></div></div>
+    <div class="col-12 col-xl-4"><div class="card border-0 shadow-sm"><div class="card-header bg-white fw-semibold">簽到與未簽到</div><div class="card-body"><div id="chCheck" class="chart-box tall"></div></div></div></div>
+    <div class="col-12"><div class="card border-0 shadow-sm"><div class="card-header bg-white fw-semibold">近 6 個月趨勢</div><div class="card-body"><div id="chTrend" class="chart-box tall"></div></div></div></div>
+</div>
+
+<script id="stats-data" type="application/json">@Html.Raw(Model.DataJson)</script>
+
+@section Scripts {
+    <script src="~/lib/echarts/echarts.min.js"></script>
+    <script src="~/js/stats.js" asp-append-version="true"></script>
+}

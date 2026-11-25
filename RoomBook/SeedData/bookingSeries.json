@@ -1,0 +1,77 @@
+[
+  {
+    "roomId": "9b34b04a-2852-b1d1-c7f8-b80f50382e62",
+    "organizerId": "053bb18c-29a6-95a8-3066-6d9bedddf069",
+    "title": "研發部週會",
+    "description": "每週一固定的研發部進度同步與技術分享。",
+    "attendeeCount": 3,
+    "requiredEquipment": [
+      "視訊"
+    ],
+    "participantIds": [
+      "fdc03462-c64f-557e-42a7-465b11b6fabd",
+      "3563af6c-6fb9-6e68-e913-b07ff432e658"
+    ],
+    "externalGuests": [],
+    "status": "Confirmed",
+    "recurrence": "Weekly",
+    "startDate": "2026-10-26",
+    "endDate": "2027-02-01",
+    "daysOfWeek": [
+      "Monday"
+    ],
+    "startTime": "09:30:00",
+    "endTime": "10:30:00",
+    "history": [
+      {
+        "atUtc": "2026-10-26T03:55:56.833198Z",
+        "actorId": "053bb18c-29a6-95a8-3066-6d9bedddf069",
+        "actorName": "張家銘",
+        "action": "建立週期預約",
+        "note": "每週一 09:30–10:30"
+      }
+    ],
+    "id": "2582ff86-138d-1a2b-02af-d56dcd8a4c71",
+    "version": 1,
+    "createdAt": "2026-10-26T03:55:56.833198Z",
+    "updatedAt": "2026-10-26T03:55:56.833198Z"
+  },
+  {
+    "roomId": "9b34b04a-2852-b1d1-c7f8-b80f50382e62",
+    "organizerId": "b85ed470-e1af-228e-a65b-2496f2b4c931",
+    "title": "雙週產品評審會",
+    "description": "每兩週檢視產品進度與客戶回饋。",
+    "attendeeCount": 4,
+    "requiredEquipment": [
+      "電視"
+    ],
+    "participantIds": [
+      "402ac731-dbb4-f7a3-4a13-f3b0323cf8f0",
+      "053bb18c-29a6-95a8-3066-6d9bedddf069",
+      "0264f4d6-dcb2-8385-f959-caedfd8cdb3a"
+    ],
+    "externalGuests": [],
+    "status": "Confirmed",
+    "recurrence": "BiWeekly",
+    "startDate": "2026-11-05",
+    "endDate": "2027-03-25",
+    "daysOfWeek": [
+      "Thursday"
+    ],
+    "startTime": "16:00:00",
+    "endTime": "17:00:00",
+    "history": [
+      {
+        "atUtc": "2026-10-26T03:55:56.833198Z",
+        "actorId": "b85ed470-e1af-228e-a65b-2496f2b4c931",
+        "actorName": "林怡君",
+        "action": "建立週期預約",
+        "note": "每兩週週四 16:00–17:00"
+      }
+    ],
+    "id": "7e91adc3-81fd-b81e-56ba-3e072522fce6",
+    "version": 1,
+    "createdAt": "2026-10-26T03:55:56.833198Z",
+    "updatedAt": "2026-10-26T03:55:56.833198Z"
+  }
+]

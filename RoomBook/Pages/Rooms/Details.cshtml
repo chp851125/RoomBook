@@ -1,0 +1,80 @@
+@page "{id:guid}"
+@model RoomBook.Pages.Rooms.DetailsModel
+@inject ITimeProvider Time
+@{
+    ViewData["Title"] = Model.Room.Name;
+    ViewData["Nav"] = "rooms";
+    var room = Model.Room;
+}
+
+<nav aria-label="breadcrumb"><ol class="breadcrumb small mb-2">
+    <li class="breadcrumb-item"><a asp-page="/Rooms/Index">會議室</a></li>
+    <li class="breadcrumb-item active">@room.Name</li>
+</ol></nav>
+
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h1 class="h4">@room.Name</h1>
+                    <partial name="_RoomStatusBadge" model="room.Status" />
+                </div>
+                <p class="text-muted">@room.Description</p>
+                <dl class="row small mb-3">
+                    <dt class="col-4 text-muted">樓層</dt><dd class="col-8">@room.Floor 樓</dd>
+                    <dt class="col-4 text-muted">容納人數</dt><dd class="col-8">@room.Capacity 人</dd>
+                    <dt class="col-4 text-muted">設備</dt>
+                    <dd class="col-8">@foreach (var e in room.Equipment) { <span class="badge rounded-pill text-bg-light border me-1">@e</span> }</dd>
+                    <dt class="col-4 text-muted">預約方式</dt><dd class="col-8">@(room.RequiresApproval ? "需管理員審核" : "直接確認")</dd>
+                </dl>
+                @if (Model.NowStatus is { } ns)
+                {
+                    <div class="alert @(ns.IsFreeNow ? "alert-success" : ns.Current is not null ? "alert-danger" : "alert-secondary") py-2 small">
+                        @if (ns.IsFreeNow) { <text><i class="bi bi-check-circle me-1"></i>目前空閒，至 @Time.Format(ns.FreeUntilUtc!.Value, "HH:mm")</text> }
+                        else if (ns.Current is not null) { <text><i class="bi bi-person-workspace me-1"></i>使用中：@ns.CurrentOrganizer，預計 @Time.Format(ns.Current.EndUtc, "HH:mm") 結束</text> }
+                        else { <text>目前無法使用（非營業時段或會議室未啟用）</text> }
+                    </div>
+                }
+                @if (room.Status == RoomStatus.Active)
+                {
+                    <div class="d-grid gap-2 d-sm-flex">
+                        <a class="btn btn-primary" asp-page="/Bookings/Create" asp-route-roomId="@room.Id"><i class="bi bi-plus-lg me-1"></i>預約這間會議室</a>
+                        <a class="btn btn-outline-secondary" asp-page="/Bookings/Index" asp-route-roomId="@room.Id"><i class="bi bi-calendar3 me-1"></i>看行事曆</a>
+                        <a class="btn btn-outline-secondary" asp-page="/Display/Index" asp-route-roomId="@room.Id" target="_blank"><i class="bi bi-tv me-1"></i>看板頁</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold">近期預約概況（未來 7 天）</div>
+            @if (Model.Upcoming.Count == 0)
+            {
+                <div class="card-body text-muted text-center py-4">近 7 天沒有預約，整天都有空。</div>
+            }
+            else
+            {
+                <ul class="list-group list-group-flush">
+                @foreach (var day in Model.Upcoming)
+                {
+                    <li class="list-group-item bg-light small fw-semibold">@day.Key.ToString("MM/dd") （@(new[]{"日","一","二","三","四","五","六"}[(int)day.Key.DayOfWeek])）</li>
+                    @foreach (var row in day)
+                    {
+                        <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
+                            <div class="min-w-0">
+                                <a class="text-decoration-none fw-semibold" asp-page="/Bookings/Details"
+                                   asp-route-id="@row.Slot.BookingId" asp-route-seriesId="@row.Slot.SeriesId"
+                                   asp-route-date="@(row.Slot.BookingId is null ? row.Slot.OccurrenceDate?.ToString("yyyy-MM-dd") : null)">@row.Slot.Title</a>
+                                <div class="small text-muted">@Time.Format(row.Slot.StartUtc, "HH:mm")–@Time.Format(row.Slot.EndUtc, "HH:mm") · @row.Organizer@(row.Slot.IsSeries ? " · 週期" : "")</div>
+                            </div>
+                            <partial name="_BookingStatusBadge" model="row.Slot.Status" />
+                        </li>
+                    }
+                }
+                </ul>
+            }
+        </div>
+    </div>
+</div>

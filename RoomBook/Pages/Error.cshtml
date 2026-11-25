@@ -1,0 +1,16 @@
+﻿@page
+@model RoomBook.Pages.ErrorModel
+@{
+    ViewData["Title"] = "發生錯誤";
+    Layout = "_LayoutPlain";
+}
+<div class="text-center py-5">
+    <div class="display-3 text-danger"><i class="bi bi-emoji-frown"></i></div>
+    <h1 class="h3 mt-3">@Model.Heading</h1>
+    <p class="text-muted">@Model.Message</p>
+    @if (Model.RequestId is not null)
+    {
+        <p class="small text-muted">追蹤代碼：<code>@Model.RequestId</code></p>
+    }
+    <a class="btn btn-primary" href="/">回首頁</a>
+</div>

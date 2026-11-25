@@ -1,0 +1,162 @@
+@page "{id:guid?}"
+@model RoomBook.Pages.Bookings.DetailsModel
+@inject ITimeProvider Time
+@{
+    var d = Model.Detail;
+    ViewData["Title"] = d.Title;
+    ViewData["Nav"] = "";
+    var dateText = Time.Format(d.StartUtc, "yyyy/MM/dd");
+    var occDate = d.OccurrenceDate?.ToString("yyyy-MM-dd");
+}
+
+<nav aria-label="breadcrumb"><ol class="breadcrumb small mb-2">
+    <li class="breadcrumb-item"><a asp-page="/Bookings/Index">行事曆</a></li>
+    <li class="breadcrumb-item active">預約詳情</li>
+</ol></nav>
+
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                    <h1 class="h4 mb-0 @(d.IsOccurrenceCancelled ? "text-decoration-line-through text-muted" : "")">@d.Title</h1>
+                    <partial name="_BookingStatusBadge" model="d.Status" />
+                </div>
+                <div class="text-muted small mb-3">@d.BookingNo@(d.IsOccurrenceModified ? " · 本次已改時間" : "")</div>
+
+                @if (d.IsOccurrenceCancelled)
+                {
+                    <div class="alert alert-secondary py-2 small"><i class="bi bi-calendar-x me-1"></i>這一次已被取消（單次例外），其他日期仍照常。@(string.IsNullOrEmpty(d.ExceptionReason) ? "" : "原因：" + d.ExceptionReason)</div>
+                }
+                @if (d.Status == BookingStatus.Pending)
+                {
+                    <div class="alert alert-warning py-2 small"><i class="bi bi-hourglass-split me-1"></i>等待管理員審核中，審核期間時段已為你保留。</div>
+                }
+                @if (d.Status == BookingStatus.Rejected)
+                {
+                    <div class="alert alert-danger py-2 small"><i class="bi bi-x-circle me-1"></i>已被駁回：@d.ReviewNote</div>
+                }
+                @if (d.Status == BookingStatus.Cancelled && !string.IsNullOrEmpty(d.CancelReason) && !d.IsOccurrenceCancelled)
+                {
+                    <div class="alert alert-secondary py-2 small">取消原因：@d.CancelReason</div>
+                }
+
+                <dl class="row mb-0">
+                    <dt class="col-4 col-md-3 text-muted fw-normal"><i class="bi bi-clock me-1"></i>時間</dt>
+                    <dd class="col-8 col-md-9">@dateText @Model.StartText–@Model.EndText</dd>
+                    <dt class="col-4 col-md-3 text-muted fw-normal"><i class="bi bi-door-open me-1"></i>會議室</dt>
+                    <dd class="col-8 col-md-9"><a asp-page="/Rooms/Details" asp-route-id="@d.RoomId">@d.RoomName</a>（@d.RoomFloor 樓）</dd>
+                    <dt class="col-4 col-md-3 text-muted fw-normal"><i class="bi bi-person me-1"></i>預約人</dt>
+                    <dd class="col-8 col-md-9">@d.OrganizerName</dd>
+                    <dt class="col-4 col-md-3 text-muted fw-normal"><i class="bi bi-people me-1"></i>人數</dt>
+                    <dd class="col-8 col-md-9">@d.AttendeeCount 人</dd>
+                    @if (d.RecurrenceText is not null)
+                    {
+                        <dt class="col-4 col-md-3 text-muted fw-normal"><i class="bi bi-arrow-repeat me-1"></i>週期</dt>
+                        <dd class="col-8 col-md-9">@d.RecurrenceText</dd>
+                    }
+                    @if (d.Equipment.Count > 0)
+                    {
+                        <dt class="col-4 col-md-3 text-muted fw-normal"><i class="bi bi-projector me-1"></i>設備</dt>
+                        <dd class="col-8 col-md-9">@foreach (var e in d.Equipment) { <span class="badge rounded-pill text-bg-light border me-1">@e</span> }</dd>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(d.Description))
+                    {
+                        <dt class="col-4 col-md-3 text-muted fw-normal"><i class="bi bi-card-text me-1"></i>說明</dt>
+                        <dd class="col-8 col-md-9" style="white-space: pre-line">@d.Description</dd>
+                    }
+                </dl>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white fw-semibold">參與者</div>
+            <div class="card-body">
+                @if (d.Participants.Count == 0 && d.Guests.Count == 0)
+                {
+                    <div class="text-muted small">沒有指定其他參與者。</div>
+                }
+                @foreach (var p in d.Participants)
+                {
+                    <span class="badge text-bg-light border me-1 mb-1 fs-6 fw-normal"><i class="bi bi-person me-1"></i>@p.Name <small class="text-muted">@p.Department</small></span>
+                }
+                @if (d.Guests.Count > 0)
+                {
+                    <div class="small text-muted mt-2 mb-1">外部訪客</div>
+                    @foreach (var g in d.Guests)
+                    {
+                        <span class="badge text-bg-warning-subtle border me-1 mb-1 fs-6 fw-normal text-dark"><i class="bi bi-person-badge me-1"></i>@g.Name <small>@g.Company</small></span>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-body d-grid gap-2">
+                @if (d.BookingId is { } bid)
+                {
+                    <a class="btn btn-outline-primary" asp-page="/Bookings/Create" asp-route-copyFrom="@bid"><i class="bi bi-files me-1"></i>複製預約</a>
+                }
+                else if (d.SeriesId is { } sid)
+                {
+                    <a class="btn btn-outline-primary" asp-page="/Bookings/Create" asp-route-copySeries="@sid" asp-route-copyDate="@occDate"><i class="bi bi-files me-1"></i>複製預約</a>
+                }
+                @if (Model.CanChangeOccurrence)
+                {
+                    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modifyModal"><i class="bi bi-clock-history me-1"></i>修改這一次的時間</button>
+                }
+                @if (Model.Item is { } item)
+                {
+                    <partial name="_BookingActions" model="(item, (string)(Request.Path + Request.QueryString))" />
+                }
+                <a class="btn btn-outline-secondary" asp-page-handler="Ics" asp-route-id="@d.BookingId" asp-route-seriesId="@(d.BookingId is null ? d.SeriesId : null)" asp-route-date="@(d.BookingId is null ? occDate : null)"><i class="bi bi-calendar-plus me-1"></i>加入行事曆（.ics）</a>
+                <a class="btn btn-link" asp-page="/Bookings/Index" asp-route-roomId="@d.RoomId">看這間會議室的行事曆</a>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold">處理歷程</div>
+            @if (d.History.Count == 0)
+            {
+                <div class="card-body text-muted small">尚無紀錄。</div>
+            }
+            else
+            {
+                <ul class="list-group list-group-flush timeline">
+                    @foreach (var h in d.History)
+                    {
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between"><span class="fw-semibold small">@h.Action</span><span class="text-muted small">@Time.Format(h.AtUtc, "MM/dd HH:mm")</span></div>
+                            <div class="small text-muted">@h.ActorName@(string.IsNullOrEmpty(h.Note) ? "" : " · " + h.Note)</div>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+</div>
+
+@if (Model.CanChangeOccurrence)
+{
+    <div class="modal fade" id="modifyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form class="modal-content" method="post" asp-page-handler="ModifyOccurrence">
+                <input type="hidden" name="seriesId" value="@d.SeriesId" />
+                <input type="hidden" name="date" value="@occDate" />
+                <div class="modal-header"><h5 class="modal-title">修改這一次的時間</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button></div>
+                <div class="modal-body">
+                    <p class="small text-muted">只改 @dateText 這一次，需在營業時段內且不與其他預約衝突。</p>
+                    <div class="row g-2">
+                        <div class="col-6"><label class="form-label" for="newStart">開始</label><input id="newStart" name="newStart" type="time" step="900" class="form-control" value="@Model.StartText" required /></div>
+                        <div class="col-6"><label class="form-label" for="newEnd">結束</label><input id="newEnd" name="newEnd" type="time" step="900" class="form-control" value="@Model.EndText" required /></div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">返回</button><button type="submit" class="btn btn-primary">儲存</button></div>
+            </form>
+        </div>
+    </div>
+}
+
+<partial name="_CancelModal" />
