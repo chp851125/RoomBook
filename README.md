@@ -4,10 +4,12 @@
 資料存在 JSON 檔（無資料庫、無 EF Core），商業邏輯與儲存分離，日後可換成資料庫而不必改商業邏輯。
 桌機與手機（RWD，底部導覽）都好用；前端函式庫全部放在 `wwwroot/lib`，**可離線執行**，不使用任何付費服務或 API Key。
 
-| | |
-|---|---|
-| ![行事曆](docs/screenshots/calendar.png) | ![手機我的預約](docs/screenshots/mobile-my-bookings.png) |
-| ![統計儀表板](docs/screenshots/stats.png) | ![會議室看板](docs/screenshots/display.png) |
+| |
+|---|
+| ![行事曆](docs/screenshots/calendar.png) | 
+| ![手機我的預約](docs/screenshots/mobile-my-bookings.png) |
+| ![統計儀表板](docs/screenshots/stats.png) | 
+| ![會議室看板](docs/screenshots/display.png) |
 
 > 截圖占位：請把畫面存成 `docs/screenshots/*.png`（上列檔名）。
 
